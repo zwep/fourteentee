@@ -7,7 +7,7 @@ from objective_configuration.fourteenT import COIL_NAME_ORDER, COLOR_MAP, DPLOT_
     DDATA_KT_BETA_VOP, DPLOT_KT_BETA_VOP, WEIRD_RF_FACTOR
 import numpy as np
 import os
-import harreveltools.helper.plot as hplot
+import harreveltools.plot as hplot
 
 
 """

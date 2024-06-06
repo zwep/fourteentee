@@ -5,8 +5,8 @@ from objective_configuration.fourteenT import CALC_OPTIONS, DDATA, COIL_NAME_ORD
     COIL_NAME_ORDER_TRANSLATED
 from objective_helper.fourteenT import ReadMatData, VisualizeData
 import os
-import harreveltools.helper.data_transform as htransf
-import harreveltools.helper.plot as hplot
+import harreveltools.data_transform as htransf
+import harreveltools.plot as hplot
 import numpy as np
 
 file_list = os.listdir(DDATA)

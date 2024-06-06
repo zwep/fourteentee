@@ -1,7 +1,7 @@
 import re
 import os
 import numpy as np
-import harreveltools.helper.data_transform as htransf
+import harreveltools.data_transform as htransf
 # import helper.misc as hmisc
 # import helper.plot_class as hplotc
 import h5py

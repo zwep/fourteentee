@@ -2,8 +2,8 @@ import os
 import numpy as np
 from objective_helper.fourteenT import ReadMatData
 from objective_configuration.fourteenT import DDATA, MID_SLICE_OFFSET, DMASK_THOMAS, DPLOT_FINAL
-import harreveltools.helper.data_transform as htransf
-import harreveltools.helper.plot as hplot
+import harreveltools.data_transform as htransf
+import harreveltools.plot as hplot
 
 # Load the mask..
 thomas_mask = np.load(DMASK_THOMAS)

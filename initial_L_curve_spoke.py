@@ -1,5 +1,5 @@
 import objective_helper.fourteenT as helper_14T
-import helper.misc as hmisc
+import harreveltools.data_transform as htransf
 
 import matplotlib.pyplot as plt
 from objective_configuration.fourteenT import COIL_NAME_ORDER, COLOR_DICT, \
@@ -22,7 +22,7 @@ def plot_kt_spoke_individual(ddata, dplot, step_size=1):
     :return:
     """
     n_models = len(COIL_NAME_ORDER)
-    subplot_size = hmisc.get_square(n_models)
+    subplot_size = htransf.get_square(n_models)
     fig, ax = plt.subplots(*subplot_size)
     fig.suptitle(os.path.basename(ddata))
     ax = ax.ravel()

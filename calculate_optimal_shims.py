@@ -2,7 +2,7 @@ import sys
 sys.path.append('/')  # I dont know why this is there
 import json
 import os
-import harreveltools.helper.plot as hplot
+import harreveltools.plot as hplot
 from objective_helper.fourteenT import ReadMatData, OptimizeData
 from objective_configuration.fourteenT import CALC_OPTIONS, DDATA, MAX_ITER
 

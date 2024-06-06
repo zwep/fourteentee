@@ -1,6 +1,6 @@
 import objective_helper.fourteenT as helper_14T
-import harreveltools.helper.plot as hplot
-import harreveltools.helper.data_transform as htransf
+import harreveltools.plot as hplot
+import harreveltools.data_transform as htransf
 import matplotlib.pyplot as plt
 from objective_configuration.fourteenT import COIL_NAME_ORDER, COLOR_DICT, \
     DDATA_KT_POWER, DPLOT_KT_POWER, PLOT_LINEWIDTH,\
@@ -9,7 +9,7 @@ from objective_configuration.fourteenT import COIL_NAME_ORDER, COLOR_DICT, \
 import numpy as np
 import os
 
-
+import harreveltools
 """
 Plot all axial slices of all kT point simulations for all coils
 
