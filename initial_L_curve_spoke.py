@@ -27,7 +27,7 @@ def plot_kt_spoke_individual(ddata, dplot, step_size=1):
     fig.suptitle(os.path.basename(ddata))
     ax = ax.ravel()
 
-    for icoil, sel_coil in enumerate(COIL_NAME_ORDER):
+    for icoil, sel_coil in enumerate(COIL_NAME_ORDER[-1:]):
         print('Plotting coil ', sel_coil)
         # The WEIRD_RF_FACTOR is only necessary for the 5kT data I think. Check with Thomas Roos?
         visual_obj = helper_14T.KtImage(ddata, dplot, sel_coil,

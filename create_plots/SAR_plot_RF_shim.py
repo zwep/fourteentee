@@ -15,7 +15,7 @@ mat_files = [x for x in file_list if x.endswith('mat')]
 str_normalization = '_head_sar'
 str_appendix = ''
 
-for i_options in CALC_OPTIONS:
+for i_options in CALC_OPTIONS[0:1]:
     full_mask = i_options['full_mask']
     type_mask = i_options['type_mask']
     ddest = i_options['ddest']

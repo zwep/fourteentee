@@ -26,6 +26,7 @@ for icoil, sel_coil in enumerate(COIL_NAME_ORDER):
                                          flip_angle_factor=TARGET_FLIP_ANGLE)
     # Select the file that is optimal in a sense..
     for file_name in visual_obj.output_design_files:
+        # rf_waveform = visual_obj.get_unique_pulse_settings(file_name)
         max_peak_sar_Q, _, _ = visual_obj.get_peak_SAR_Q(file_name)
         max_peak_sar, _, _ = visual_obj.get_peak_SAR(file_name)
         print(max_peak_sar, max_peak_sar_Q)

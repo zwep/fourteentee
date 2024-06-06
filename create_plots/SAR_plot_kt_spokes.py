@@ -18,7 +18,7 @@ n_coils = len(COIL_NAME_ORDER)
 
 for sel_ddata, sel_dplot in [(DDATA_KT_BETA_POWER, DPLOT_KT_BETA_POWER), (DDATA_KT_BETA_VOP, DPLOT_KT_BETA_VOP)][0:1]:
     print(sel_ddata, sel_dplot)
-    for icoil, sel_coil in enumerate(COIL_NAME_ORDER[:1]):
+    for icoil, sel_coil in enumerate(COIL_NAME_ORDER):
         print(icoil, sel_coil)
         visual_obj = helper_14T.VisualizeKtImage(sel_ddata, sel_dplot, sel_coil,
                                                  str_normalization='_head_sar',

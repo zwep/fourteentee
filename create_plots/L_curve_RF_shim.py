@@ -26,7 +26,7 @@ def plot_final_result(optimal_shim_results, optimal_indices_dict, scaling_factor
         all_coil_results_dict = hmisc.listdict2dictlist(all_coil_results)
         chosen_y_value = all_coil_results_dict[key_y][sel_index_opt][sel_index_lambda] * scaling_factor ** 2
         chosen_x_value = all_coil_results_dict[key_x][sel_index_opt][sel_index_lambda]
-        # Trying to fit in the minimum L curve line..
+        # Trying to fit in the minimum L curve line..!!!
         x = np.array(all_coil_results_dict[key_x]).ravel()
         y = np.array(all_coil_results_dict[key_y]).ravel() * scaling_factor ** 2
         point_list = [(ix, iy) for ix, iy in list(zip(x, y))]
@@ -35,8 +35,10 @@ def plot_final_result(optimal_shim_results, optimal_indices_dict, scaling_factor
         # Plot the minimum line
         ax.plot(min_x_coords, min_y_coords, color=COLOR_DICT[sel_coil], linestyle=line_style, label=coil_plot_name,
                 linewidth=PLOT_LINEWIDTH)
+        #ax.scatter(min_x_coords, min_y_coords, marker='*', c='k')
         # Plot the black star//
-        #ax.scatter(chosen_x_value, chosen_y_value, marker='*', c='k', zorder=999)
+        ax.scatter(chosen_x_value, chosen_y_value, marker='*', c='k', zorder=999)
+        print(sel_coil, chosen_x_value, chosen_y_value, index_lower_bound)
 #
     legend_obj = ax.legend(loc='upper right')
     # helper_14T.flush_right_legend(legend_obj)

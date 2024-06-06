@@ -43,6 +43,7 @@ def store_coil_spoke(sel_coil, sel_spoke, ddata, dplot):
     head_sar_dict[sel_coil]['head_sar'] = avg_power_deposition / sel_spoke
 
 
+
 sel_kt_spoke = 5
 head_sar_dict = {}
 for icoil, sel_coil in enumerate(COIL_NAME_ORDER):
