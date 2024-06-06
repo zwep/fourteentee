@@ -1,5 +1,6 @@
 from objective_helper.fourteenT import VisualizeAllMetrics
-import helper.misc as hmisc
+import harreveltools.helper.analytics as hanalytic
+import harreveltools.helper.data_transform as htransf
 import numpy as np
 import matplotlib.pyplot as plt
 import objective_helper.fourteenT as helper_14T
@@ -23,14 +24,14 @@ def plot_final_result(optimal_shim_results, optimal_indices_dict, scaling_factor
         coil_plot_name = COIL_NAME_ORDER_TRANSLATOR[sel_coil]
         sel_index_opt, sel_index_lambda = optimal_indices_dict[sel_coil]
         all_coil_results = optimal_shim_results[sel_coil]
-        all_coil_results_dict = hmisc.listdict2dictlist(all_coil_results)
+        all_coil_results_dict = htransf.listdict2dictlist(all_coil_results)
         chosen_y_value = all_coil_results_dict[key_y][sel_index_opt][sel_index_lambda] * scaling_factor ** 2
         chosen_x_value = all_coil_results_dict[key_x][sel_index_opt][sel_index_lambda]
         # Trying to fit in the minimum L curve line..!!!
         x = np.array(all_coil_results_dict[key_x]).ravel()
         y = np.array(all_coil_results_dict[key_y]).ravel() * scaling_factor ** 2
         point_list = [(ix, iy) for ix, iy in list(zip(x, y))]
-        lower_bound, index_lower_bound = hmisc.lower_bound_line(point_list)
+        lower_bound, index_lower_bound = hanalytic.lower_bound_line(point_list)
         min_x_coords, min_y_coords = zip(*lower_bound)
         # Plot the minimum line
         ax.plot(min_x_coords, min_y_coords, color=COLOR_DICT[sel_coil], linestyle=line_style, label=coil_plot_name,
@@ -60,7 +61,7 @@ for i_options in CALC_OPTIONS[:1]:
         visual_obj = VisualizeAllMetrics(ddest=ddest, opt_shim_str=f'opt_shim_{str(ii).zfill(2)}')
         temp_list.append(visual_obj.optimized_json_data)
 #
-    optimal_shim_results = hmisc.listdict2dictlist(temp_list)
+    optimal_shim_results = htransf.listdict2dictlist(temp_list)
 #
     if 'power' in objective_str:
         fig = plot_final_result(optimal_shim_results, optimal_indices_dict=OPTIMAL_SHIM_POWER, scaling_factor=RF_SCALING_FACTOR)

@@ -1,6 +1,6 @@
 import objective_helper.fourteenT as helper_14T
-import helper.plot_fun as hplotf
-import helper.metric as hmetric
+import harreveltools.helper.plot as hplot
+import harreveltools.helper.data_transform as htransf
 import matplotlib.pyplot as plt
 from objective_configuration.fourteenT import COIL_NAME_ORDER, COLOR_DICT, \
     DDATA_KT_POWER, DPLOT_KT_POWER, PLOT_LINEWIDTH,\
@@ -31,7 +31,7 @@ def get_masked_array(ddata, dplot, sel_coil, sel_spoke):
     visual_obj = helper_14T.KtImage(ddata, dplot, sel_coil)
     sel_file = visual_obj._get_kt_file(sel_spoke)
     kt_array = visual_obj.get_flip_angle_map(sel_file)
-    axial_img = hplotf.get_all_mid_slices(kt_array, offset=MID_SLICE_OFFSET)[-1]
+    axial_img = htransf.get_all_mid_slices(kt_array, offset=MID_SLICE_OFFSET)[-1]
     masked_array = np.abs(kt_array[visual_obj.thomas_mask_array == 1])
     return masked_array, axial_img
 

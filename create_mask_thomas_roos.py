@@ -1,6 +1,6 @@
 import os
 import numpy as np
-import helper.misc as hmisc
+import harreveltools.file_handling as hfile
 from objective_configuration.fourteenT import DDATA_KT_POWER, DMASK_THOMAS
 from objective_helper.fourteenT import convert_thomas_array_to_me
 import scipy.io
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     for sel_file in debug_design_files:
         split_file_name = sel_file.split('_')
         coil_name = split_file_name[2]
-        kt_number = hmisc.get_base_name(split_file_name[3])
+        kt_number = hfile.get_base_name(split_file_name[3])
         # Load the data...
         sel_mat_file = os.path.join(DDATA_KT_POWER, sel_file)
         mat_obj = scipy.io.loadmat(sel_mat_file)

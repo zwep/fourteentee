@@ -1,24 +1,25 @@
 import re
 import os
 import numpy as np
-import helper.misc as hmisc
-import helper.plot_class as hplotc
 import h5py
 import matplotlib.pyplot as plt
 import scipy.io
 
-# Misc code..
 import scipy.optimize
-import helper.array_transf as harray
-import helper.plot_fun as hplotf
 from objective_configuration.fourteenT import DDATA, DMASK_THOMAS, \
                                         ARRAY_SHAPE, X_METRIC, Y_METRIC, DDATA_POWER_DEPOS, \
     SUBDIR_OPTIM_SHIM, SUBDIR_RANDOM_SHIM, \
     MID_SLICE_OFFSET, COIL_NAME_ORDER_TRANSLATOR, TARGET_FLIP_ANGLE, RF_SCALING_FACTOR, \
     OPTIMAL_SHIM_SAR, OPTIMAL_SHIM_POWER
-import helper.metric as hmetric
 from objective_configuration.fourteenT import COIL_NAME_ORDER, COLOR_DICT, COLOR_MAP, TARGET_B1, TARGET_FLIP_ANGLE, WEIRD_RF_FACTOR
 import pandas as pd
+
+import harreveltools.file_handling as hfile
+import harreveltools.analytics as hanalytics
+import harreveltools.data_transform as htransf
+import harreveltools.display as hdisplay
+import harreveltools.metric as hmetric
+import harreveltools.plot as hplot
 
 
 def flush_right_legend(legend_obj):
@@ -83,7 +84,7 @@ class ReadMatData:
     def print_content_mat_obj(self):
         with h5py.File(self.mat_path, 'r') as h5_obj:
             mat_obj = h5_obj[self.h5_key]
-            hmisc.print_dict(mat_obj)
+            hdisplay.print_dict(mat_obj)
 
     def read_mat_object(self):
         # Read and load specific data points
@@ -250,7 +251,7 @@ class ReadMatData:
     def get_tresholded_mask(self, sigma_array):
         n_slice, _, _ = sigma_array.shape
         sel_slice = n_slice // 2
-        shim_mask = harray.get_treshold_label_mask(sigma_array[sel_slice], treshold_value=0.01 * sigma_array[sel_slice].mean())
+        shim_mask = hanalytics.get_treshold_label_mask(sigma_array[sel_slice], treshold_value=0.01 * sigma_array[sel_slice].mean())
         return shim_mask, sel_slice
 
 
@@ -288,7 +289,7 @@ class PathData:
         optimal_file_index, optimal_lambda_index = self.optimal_index_dict[coil_name]
         optimal_file_index = str(optimal_file_index).zfill(2)
         json_path = os.path.join(ddest, SUBDIR_OPTIM_SHIM, coil_name, f'opt_shim_{optimal_file_index}.json')
-        self.result_dict = hmisc.load_json(json_path)
+        self.result_dict = hfile.load_json(json_path)
         self.result_dict['opt_shim'] = [np.array(x[0]) + 1j * np.array(x[1]) for x in self.result_dict['opt_shim']]
         self.optimal_shim = self.result_dict['opt_shim'][optimal_lambda_index]
         print('We multiply the RF_SCALING_FACTOR with the optimal shim.')
@@ -344,7 +345,7 @@ class DataCollector:
             chosen_mask = self.brain_mask
         elif self.type_mask == 'thomas_mask':
             # Now... we need a kT points mask..
-            chosen_mask = hmisc.load_array(DMASK_THOMAS)
+            chosen_mask = hfile.load_array(DMASK_THOMAS)
         else:
             chosen_mask = np.ones(self.brain_mask.shape)
 
@@ -516,7 +517,7 @@ class OptimizeData(DataCollector):
                                                            append_key_bool=True)
             result.append(result_dict_scaled)
 
-        result_dict_list = hmisc.listdict2dictlist(result)
+        result_dict_list = htransf.listdict2dictlist(result)
         return result_dict_list
 
     def get_random_shim_setting(self):
@@ -622,12 +623,12 @@ class VisualizeData(DataCollector, PathData):
         PathData.__init__(self, ddest=ddest, coil_name=mat_reader.coil_name,
                           opt_subdir=opt_subdir)
 
-        self.thomas_mask_array = hmisc.load_array(DMASK_THOMAS)
+        self.thomas_mask_array = hfile.load_array(DMASK_THOMAS)
 
     def plot_optimal_lambda(self):
         x_coord = self.result_dict[X_METRIC]
         y_coord = self.result_dict[Y_METRIC]
-        curvature, index_max = hmisc.get_maximum_curvature(x_coord, y_coord)
+        curvature, index_max = hanalytics.get_maximum_curvature(x_coord, y_coord)
         fig, ax = plt.subplots(2)
         ax[0].scatter(x_coord, y_coord)
         for ii in np.arange(0, len(x_coord), 5):
@@ -641,8 +642,8 @@ class VisualizeData(DataCollector, PathData):
 
     def plot_SNR(self):
         SNR = np.load(self.path_snr_file + '.npy')[::-1]
-        SNR_plot_list = hplotf.get_all_mid_slices(SNR, offset=MID_SLICE_OFFSET)
-        fig_obj = hplotc.ListPlot([SNR_plot_list], ax_off=True, cbar=True, wspace=0.5,
+        SNR_plot_list = htransf.get_all_mid_slices(SNR, offset=MID_SLICE_OFFSET)
+        fig_obj = hplot.ListPlot([SNR_plot_list], ax_off=True, cbar=True, wspace=0.5,
                                   title=self.mat_reader.coil_name, cmap=COLOR_MAP)
         fig_obj.figure.savefig(self.path_snr_file + '.png')
         return SNR_plot_list
@@ -650,24 +651,24 @@ class VisualizeData(DataCollector, PathData):
     def plot_conductivity(self):
         """ Not really needed..."""
         sigma_array = np.load(self.path_sigma_file + '.npy')[::-1]
-        sigma_plot_list = hplotf.get_all_mid_slices(sigma_array, offset=MID_SLICE_OFFSET)
-        fig_obj = hplotc.ListPlot([sigma_plot_list], ax_off=True,
+        sigma_plot_list = htransf.get_all_mid_slices(sigma_array, offset=MID_SLICE_OFFSET)
+        fig_obj = hplot.ListPlot([sigma_plot_list], ax_off=True,
                                   title=self.mat_reader.coil_name)
         fig_obj.figure.savefig(self.path_sigma_file + '.png')
         return sigma_plot_list
 
     def plot_optimal_b1(self, str_normalization):
         self.b1 = np.load(self.path_b1_file + str_normalization + '.npy')
-        b1_plot_list = hplotf.get_all_mid_slices(self.b1[::-1], offset=MID_SLICE_OFFSET)
-        fig_obj = hplotc.ListPlot([b1_plot_list], ax_off=True, cbar=True, wspace=0.5,
+        b1_plot_list = htransf.get_all_mid_slices(self.b1[::-1], offset=MID_SLICE_OFFSET)
+        fig_obj = hplot.ListPlot([b1_plot_list], ax_off=True, cbar=True, wspace=0.5,
                                   title=self.mat_reader.coil_name, cmap=COLOR_MAP)
         fig_obj.figure.savefig(self.path_b1_file + '.png')
         return b1_plot_list
 
     def plot_optimal_sar(self, str_normalization):
         self.sar = np.load(self.path_sar_file + str_normalization + '.npy')
-        sar_plot_list = hplotf.get_all_mid_slices(self.sar[::-1], offset=MID_SLICE_OFFSET)
-        fig_obj = hplotc.ListPlot([sar_plot_list], ax_off=True, cbar=True, wspace=0.5,
+        sar_plot_list = htransf.get_all_mid_slices(self.sar[::-1], offset=MID_SLICE_OFFSET)
+        fig_obj = hplot.ListPlot([sar_plot_list], ax_off=True, cbar=True, wspace=0.5,
                                   augm='np.abs',
                                   title=self.mat_reader.coil_name, cmap=COLOR_MAP)
         fig_obj.figure.savefig(self.path_sar_file + '.png')
@@ -718,7 +719,7 @@ class VisualizeAllMetrics:
             print("Wrong cpx key chosen ", cpx_key)
         # Slight change to load_json...
         # Because we want to convert one component to complex data...
-        result_dict = hmisc.load_json(json_path)
+        result_dict = hfile.load_json(json_path)
         result_dict[cpx_key] = [np.array(x[0]) + 1j * np.array(x[1]) for x in result_dict[cpx_key]]
         return result_dict
 
@@ -852,7 +853,7 @@ class KtImage:
         self.path_flip_angle_file = os.path.join(self.ddest, 'opt_flip_angle')
 
         # Load the Thomas mask
-        self.thomas_mask_array = hmisc.load_array(DMASK_THOMAS)
+        self.thomas_mask_array = hfile.load_array(DMASK_THOMAS)
         # Create a mat reader so that we can load the VOP data
         self.mat_reader = ReadMatData(ddata=DDATA, mat_file=self.mat_file)
         # Not loaded data or objects.....
@@ -902,7 +903,7 @@ class KtImage:
     @staticmethod
     def _get_kt_num(file_name):
         split_file_name = file_name.split('_')
-        kt_str = hmisc.get_base_name(split_file_name[3])
+        kt_str = hfile.get_base_name(split_file_name[3])
         kt_num = int(re.findall('([0-9]*)Kt', kt_str)[0])
         return kt_num
 
@@ -1080,8 +1081,8 @@ class VisualizeKtImage(KtImage):
 
     def plot_flip_angle(self):
         assert self.flipangle_map is not None
-        mid_slices = hplotf.get_all_mid_slices(self.flipangle_map[::-1], offset=MID_SLICE_OFFSET)
-        fig_obj = hplotc.ListPlot([mid_slices], augm='np.abs', cbar=True, cbar_round_n=2, wspace=0.2,
+        mid_slices = htransf.get_all_mid_slices(self.flipangle_map[::-1], offset=MID_SLICE_OFFSET)
+        fig_obj = hplot.ListPlot([mid_slices], augm='np.abs', cbar=True, cbar_round_n=2, wspace=0.2,
                                   title=self.coil_plot_name, ax_off=True, cmap=COLOR_MAP, vmin=(0.75*self.flip_angle_factor, self.flip_angle_factor*1.25))
         fig_obj.figure.savefig(self.dflip_angle_png, bbox_inches='tight')
 
@@ -1089,9 +1090,9 @@ class VisualizeKtImage(KtImage):
         assert self.time_avg_sar is not None
         # Average all the SAR spokes and plot it...
         temp_array = np.mean(self.time_avg_sar, axis=0)[::-1]
-        array_slices = hplotf.get_all_mid_slices(temp_array, offset=MID_SLICE_OFFSET)
+        array_slices = htransf.get_all_mid_slices(temp_array, offset=MID_SLICE_OFFSET)
         vmax = np.max([np.max(np.abs(x)) for x in array_slices])  #???
-        fig_obj = hplotc.ListPlot([array_slices], augm='np.abs', cbar=True, cbar_round_n=2, wspace=0.2,
+        fig_obj = hplot.ListPlot([array_slices], augm='np.abs', cbar=True, cbar_round_n=2, wspace=0.2,
                                   title=self.coil_plot_name, ax_off=True, cmap=COLOR_MAP, vmin=(0, vmax))
         fig_obj.figure.savefig(self.davg_sar, bbox_inches='tight')
 
@@ -1101,7 +1102,7 @@ class VisualizeKtImage(KtImage):
         for i_file in self.output_design_files:
             avg_norm = self.get_avg_norm_waveform(i_file).round(2)
             flip_angle_3d = np.abs(self.get_flip_angle_map(i_file))
-            axial_array = hplotf.get_all_mid_slices(flip_angle_3d, offset=MID_SLICE_OFFSET)[-1]
+            axial_array = htransf.get_all_mid_slices(flip_angle_3d, offset=MID_SLICE_OFFSET)[-1]
             fa_list.append(axial_array)
             subtitle_list.append(avg_norm)
 
@@ -1130,7 +1131,7 @@ class VisualizeKtImage(KtImage):
         multi_sar_distr = []
         for i_spoke in range(self.n_spokes):
             temp_array = self.time_avg_sar[i_spoke]
-            axial_slice = hplotf.get_all_mid_slices(temp_array[::-1], offset=MID_SLICE_OFFSET)[-1]
+            axial_slice = htransf.get_all_mid_slices(temp_array[::-1], offset=MID_SLICE_OFFSET)[-1]
             # Using ::-1 to flip the orientation of the head
             multi_sar_distr.append(axial_slice[::-1])
 

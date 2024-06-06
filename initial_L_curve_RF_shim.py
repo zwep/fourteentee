@@ -1,5 +1,6 @@
 from objective_helper.fourteenT import VisualizeAllMetrics
-import helper.misc as hmisc
+import harreveltools.data_transform as htransf
+import harreveltools.analytics as hanalytics
 import numpy as np
 import matplotlib.pyplot as plt
 import objective_helper.fourteenT as helper_14T
@@ -29,14 +30,14 @@ def plot_all_results_single_figure(optimal_shim_results, fig=None, line_style='-
         print(sel_coil)
         coil_plot_name = COIL_NAME_ORDER_TRANSLATOR[sel_coil]
         all_coil_results = optimal_shim_results[sel_coil]
-        all_coil_results_dict = hmisc.listdict2dictlist(all_coil_results)
+        all_coil_results_dict = htransf.listdict2dictlist(all_coil_results)
         all_y_values = all_coil_results_dict[f'{key_y}']
         all_x_values = all_coil_results_dict[f'{key_x}']
         #
         x = np.array(all_x_values).ravel()
         y = np.array(all_y_values).ravel() * scaling_factor ** 2
         point_list = [(ix, iy) for ix, iy in list(zip(x, y))]
-        lower_bound, index_lower_bound = hmisc.lower_bound_line(point_list)
+        lower_bound, index_lower_bound = hanalytics.lower_bound_line(point_list)
         min_x_coords, min_y_coords = zip(*lower_bound)
         if ii == 0:
             ax[1].plot(min_x_coords, min_y_coords, color=COLOR_DICT[sel_coil], linestyle=line_style, label=label_appendix)
@@ -61,13 +62,13 @@ def plot_all_results_single_figure(optimal_shim_results, fig=None, line_style='-
 
 
 def plot_all_results(optimal_shim_results, key_y='peak_SAR', key_x='b1p_nrmse', scaling_factor=1):
-    fig, ax = plt.subplots(*hmisc.get_square(len(COIL_NAME_ORDER)))
+    fig, ax = plt.subplots(*htransf.get_square(len(COIL_NAME_ORDER)))
     ax = ax.ravel()
     # Big plot to see all the simulation results
     for ii, sel_coil in enumerate(COIL_NAME_ORDER):
         coil_plot_name = COIL_NAME_ORDER_TRANSLATOR[sel_coil]
         all_coil_results = optimal_shim_results[sel_coil]
-        all_coil_results_dict = hmisc.listdict2dictlist(all_coil_results)
+        all_coil_results_dict = htransf.listdict2dictlist(all_coil_results)
         all_peak_SAR_values = all_coil_results_dict[f'{key_y}']
         all_peak_SAR_values = np.array(all_peak_SAR_values).ravel() * scaling_factor ** 2
         all_b1p_nrmse_values = all_coil_results_dict[f'{key_x}']
@@ -90,13 +91,13 @@ def plot_single_result(optimal_shim_results, sel_index, key_y='peak_SAR', key_x=
     :param sel_index:
     :return:
     """
-    fig, ax = plt.subplots(*hmisc.get_square(len(COIL_NAME_ORDER)))
+    fig, ax = plt.subplots(*htransf.get_square(len(COIL_NAME_ORDER)))
     ax = ax.ravel()
     # Big plot to see all the simulation results
     for ii, sel_coil in enumerate(COIL_NAME_ORDER):
         coil_plot_name = COIL_NAME_ORDER_TRANSLATOR[sel_coil]
         all_coil_results = optimal_shim_results[sel_coil]
-        all_coil_results_dict = hmisc.listdict2dictlist(all_coil_results)
+        all_coil_results_dict = htransf.listdict2dictlist(all_coil_results)
         all_peak_SAR_values = all_coil_results_dict[f'{key_y}'][sel_index]
         all_peak_SAR_values = np.array(all_peak_SAR_values).ravel() * scaling_factor ** 2
         all_b1p_nrmse_values = all_coil_results_dict[f'{key_x}'][sel_index]
@@ -124,7 +125,7 @@ for i_options in CALC_OPTIONS[0:1]:
         visual_obj = VisualizeAllMetrics(ddest=ddest, opt_shim_str=f'opt_shim_{str(ii).zfill(2)}')
         temp_list.append(visual_obj.optimized_json_data)
 #
-    optimal_shim_results = hmisc.listdict2dictlist(temp_list)
+    optimal_shim_results = htransf.listdict2dictlist(temp_list)
     fig, ax = plt.subplots(1, 2, figsize=(15, 10))
     fig = plot_all_results_single_figure(optimal_shim_results, key_y=key_y, ylim=ylim, fig=fig,
                                          scaling_factor=scaling_factor, label_appendix='minimum line')
@@ -159,7 +160,7 @@ for jj, i_options in enumerate(CALC_OPTIONS):
     for ii in range(n_results):
         visual_obj = VisualizeAllMetrics(ddest=ddest, opt_shim_str=f'opt_shim_{str(ii).zfill(2)}')
         temp_list.append(visual_obj.optimized_json_data)
-    optimal_shim_results = hmisc.listdict2dictlist(temp_list)
+    optimal_shim_results = htransf.listdict2dictlist(temp_list)
     legend_label = f'power'
     if 'sar' in ddest:
         legend_label = f'sar'
@@ -188,7 +189,7 @@ for jj, i_options in enumerate(CALC_OPTIONS):
     for ii in range(n_results):
         visual_obj = VisualizeAllMetrics(ddest=ddest, opt_shim_str=f'opt_shim_{str(ii).zfill(2)}')
         temp_list.append(visual_obj.optimized_json_data)
-    optimal_shim_results = hmisc.listdict2dictlist(temp_list)
+    optimal_shim_results = htransf.listdict2dictlist(temp_list)
     fig = plot_all_results_single_figure(optimal_shim_results, fig=fig,
                                          line_style=line_style_list[jj],
                                          key_y='norm_power')

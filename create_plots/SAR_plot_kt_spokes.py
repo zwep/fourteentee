@@ -7,7 +7,7 @@ from objective_configuration.fourteenT import COIL_NAME_ORDER, COLOR_MAP, DPLOT_
     DDATA_KT_BETA_VOP, DPLOT_KT_BETA_VOP, WEIRD_RF_FACTOR
 import numpy as np
 import os
-import helper.plot_class as hplotc
+import harreveltools.helper.plot as hplot
 
 
 """
@@ -26,7 +26,7 @@ for sel_ddata, sel_dplot in [(DDATA_KT_BETA_POWER, DPLOT_KT_BETA_POWER), (DDATA_
                                                  flip_angle_factor=TARGET_FLIP_ANGLE)
         multi_sar_distr = visual_obj.get_plot_sar_spokes()
         vmax = np.array(np.abs(multi_sar_distr)).max() * 0.80
-        fig_obj_sar = hplotc.ListPlot([multi_sar_distr], augm='np.abs', cbar=False,
+        fig_obj_sar = hplot.ListPlot([multi_sar_distr], augm='np.abs', cbar=False,
                                       cbar_round_n=0, wspace=0.0,
                                       ax_off=True, cmap=COLOR_MAP, vmin=(0, vmax))
 #
@@ -40,7 +40,7 @@ for sel_ddata, sel_dplot in [(DDATA_KT_BETA_POWER, DPLOT_KT_BETA_POWER), (DDATA_
         subtitle[0] = COIL_NAME_ORDER_TRANSLATOR[sel_coil] + '\n' + subtitle[0]
         subtitle = subtitle + ['Averaged']
 #
-        fig_obj_sar_cbar = hplotc.ListPlot([multi_sar_distr], augm='np.abs', cbar=True,
+        fig_obj_sar_cbar = hplot.ListPlot([multi_sar_distr], augm='np.abs', cbar=True,
                                            cbar_round_n=2, wspace=0.0,
                                            ax_off=True, cmap=COLOR_MAP,
                                            subtitle=[subtitle], vmin=(0, vmax))
@@ -54,4 +54,4 @@ for sel_ddata, sel_dplot in [(DDATA_KT_BETA_POWER, DPLOT_KT_BETA_POWER), (DDATA_
                                    bbox_inches='tight',
                                    pad_inches=0)
         fig_obj_sar_cbar.figure.savefig(os.path.join(sel_dplot, f'cbar_SAR_plot_kt_spokes_{sel_coil}.png'), bbox_inches='tight')
-        hplotc.close_all()
+        hplot.close_all()

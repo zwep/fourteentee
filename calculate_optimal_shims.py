@@ -1,8 +1,8 @@
 import sys
-sys.path.append('/')
+sys.path.append('/')  # I dont know why this is there
 import json
 import os
-import helper.plot_class as hplotc
+import harreveltools.helper.plot as hplot
 from objective_helper.fourteenT import ReadMatData, OptimizeData
 from objective_configuration.fourteenT import CALC_OPTIONS, DDATA, MAX_ITER
 
@@ -40,7 +40,7 @@ for i_options in CALC_OPTIONS:
             with open(ddest_dict, 'w') as f:
                 f.write(json_ser_obj)
 
-            hplotc.close_all()
+            hplot.close_all()
         # Remove these objects to release some memory
         del mat_reader
         del data_obj

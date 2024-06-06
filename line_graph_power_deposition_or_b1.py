@@ -1,8 +1,9 @@
 import re
 import os
 import numpy as np
-import helper.misc as hmisc
-import helper.plot_class as hplotc
+import harreveltools.helper.data_transform as htransf
+# import helper.misc as hmisc
+# import helper.plot_class as hplotc
 import h5py
 import matplotlib.pyplot as plt
 import scipy.io
@@ -44,7 +45,7 @@ with h5py.File(sel_mat_path, 'r') as h5_obj:
                'res', 'vops_method', 'vops_overest_per']
     for i_key in sel_key:
         print(i_key, np.array(mat_obj[i_key]))
-    hmisc.print_dict(mat_obj)
+    htransf.print_dict(mat_obj)
     sigma_array = np.array(mat_obj['sigma'])
     b1p_array = np.array(mat_obj['B1'][:, 0]['real'] + 1j * mat_obj['B1'][:, 0]['imag']) * 1e6 #  select B1+, go to muT
     b1m_array = np.array(mat_obj['B1'][:, 1]['real'] + 1j * mat_obj['B1'][:, 1]['imag']) * 1e6

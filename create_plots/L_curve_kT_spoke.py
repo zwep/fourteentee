@@ -1,5 +1,4 @@
 import objective_helper.fourteenT as helper_14T
-import helper.misc as hmisc
 import matplotlib.pyplot as plt
 from objective_configuration.fourteenT import COIL_NAME_ORDER, COLOR_DICT, \
     DPLOT_FINAL, \
