@@ -1,4 +1,5 @@
 import re
+import warnings
 import os
 import numpy as np
 import h5py
@@ -72,7 +73,6 @@ class ReadMatData:
         self.coil_name = mat_file.split('_')[0]
         self.coil_plot_name = COIL_NAME_ORDER_TRANSLATOR[self.coil_name]
         self.mat_path = os.path.join(ddata, mat_file)
-        # for sel_mat_file in mat_files:
         self.n_ports = int(re.findall('([0-9]+) Channel', self.coil_name)[0])
         # Global parameters... dit komt van de vertaling van de mat-files
         self.head_weight = 5  # kg
@@ -322,7 +322,11 @@ class DataCollector:
         self.brain_mask = self.mask_container['target_mask'] - self.mask_container['substrate_mask']
         self.selected_mask = self.get_mask()
         self.n_slice = self.selected_mask.shape[0]
-        self.power_deposition_matrix = np.load(os.path.join(DDATA_POWER_DEPOS, self.mat_reader.coil_name + '.npy'))
+        power_depos_path = os.path.join(DDATA_POWER_DEPOS, self.mat_reader.coil_name + '.npy')
+        if os.path.isfile(power_depos_path):
+            self.power_deposition_matrix = np.load(power_depos_path)
+        else:
+            warnings.warn(f"There is no power depostion matrix at {power_depos_path}. Please create one with the 'create_powerdeposition_matrix.npy'")
 
     @staticmethod
     def select_array(x, mask_array):

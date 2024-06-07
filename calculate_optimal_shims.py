@@ -23,13 +23,20 @@ for i_options in CALC_OPTIONS:
     objective_str = i_options['objective_str']
     ddest = i_options['ddest']
     print(ddest)
+    # Here we load one simulation file
     print('mat files', mat_files)
     for sel_mat_file in mat_files:
         print('\t\t', sel_mat_file)
+        # This is a wrapper to read all the data and do a bit of preprocessing. Initially it does nothing.
         mat_reader = ReadMatData(ddata=DDATA, mat_file=sel_mat_file)
+        # Here we load all the data (in the parentclass called DataCollector)
+        # This is also the object where the optimization takes place
         data_obj = OptimizeData(ddest=ddest, objective_str=objective_str,
                                 mat_reader=mat_reader, full_mask=full_mask, type_mask=type_mask)
         print('Data is loaded')
+        # Here we run the optimization multiple times, because we were getting local optima
+        # Running it multiple times helped to find the global optima a bit better over all iterations
+        # Note that this means that more post-processing is needed after we have obtained all the results
         for iteration in range(MAX_ITER):
             iteration_str = str(iteration).zfill(2)
             result_dict_list = data_obj.solve_trade_off_objective(max_iter=100)

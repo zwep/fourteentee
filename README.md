@@ -9,3 +9,8 @@ From there we can choose our favorite RF shim. Your selection needs to be added 
 
 Third, we are going to store the B1 and SAR images that are associated with the selected shims. This is done
 by using the script `store_shimmed_images`.
+
+## Explanation of the variables
+
+- mat_files: contain the simulation results of each coil array. The content is composed of the B- and E-fields, and more
+- 

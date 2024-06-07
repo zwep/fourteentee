@@ -3,6 +3,7 @@ import os
 """
 File contains the options and paths that we are going to explore
 """
+
 username = os.environ.get('USER', os.environ.get('USERNAME'))
 remote = False
 if username != 'bugger':
@@ -184,6 +185,7 @@ COLOR_MAP = 'viridis'
 """
 Create the different options that we used to plot stuff
 """
+
 # Redo this
 CALC_OPTIONS = [{'full_mask': True, 'type_mask': 'thomas_mask', 'objective_str': 'rmse_power'},
                 {'full_mask': True, 'type_mask': 'thomas_mask', 'objective_str': 'rmse_sar'}]
